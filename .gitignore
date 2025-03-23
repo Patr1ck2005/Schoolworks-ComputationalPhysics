@@ -1,0 +1,6 @@
+/venv
+/.idea
+/projects/pi_computation/cython_version
+
+*.png
+*.txt
