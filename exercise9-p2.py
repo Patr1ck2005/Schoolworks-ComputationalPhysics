@@ -57,6 +57,7 @@ def main():
     plt.legend()
     plt.grid(True, which='both', ls=':')
     plt.tight_layout()
+    plt.savefig('ex9-p21.png')
 
     # Plot absolute error on semilog-y
     errors = np.abs(diag - exact_value)
@@ -68,6 +69,7 @@ def main():
     plt.title('Romberg Diagonal Absolute Error')
     plt.grid(True, which='both', ls=':')
     plt.tight_layout()
+    plt.savefig('ex9-p22.png')
 
     plt.show()
 

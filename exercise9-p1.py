@@ -86,6 +86,7 @@ def main():
     plt.legend()
     plt.grid(True, which='both', ls=':')
     plt.tight_layout()
+    plt.savefig('ex9-p11.png')
 
     plt.figure()
     plt.loglog(Ns, simp_errors, 'o-', label="Simpson's Error")
@@ -96,6 +97,7 @@ def main():
     plt.legend()
     plt.grid(True, which='both', ls=':')
     plt.tight_layout()
+    plt.savefig('ex9-p12.png')
 
     plt.show()
 
