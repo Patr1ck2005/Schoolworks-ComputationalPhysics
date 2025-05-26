@@ -1,6 +1,6 @@
 /venv
 /.idea
-/projects/pi_computation/cython_version
+/projects/project1-pi_computation/cython_version
 
 *.png
 *.txt
