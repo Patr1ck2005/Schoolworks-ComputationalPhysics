@@ -12,8 +12,8 @@ def main():
     args = parser.parse_args()
 
     if args.mode == 'static':
-        # 调整参数：例如这里先尝试 10000x10000 的静态大图
-        generate_static_fractal(width=10000, height=10000, scheme=args.scheme)
+        # 调整参数：例如这里先尝试 100000x100000 的静态大图
+        generate_static_fractal(width=100000, height=100000, scheme=args.scheme)
     else:
         start_viewer()
 

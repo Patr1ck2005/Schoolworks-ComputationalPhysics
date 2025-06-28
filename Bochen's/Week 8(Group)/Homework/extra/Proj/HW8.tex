@@ -1,0 +1,541 @@
+%! Author = Kiddo_Tsukuyomi
+%! Date = 
+
+% Preamble
+\documentclass[UTF8]{ctexart}
+
+% Packages
+\usepackage{geometry}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{subcaption}
+
+% Settings
+\lstset{
+    backgroundcolor=\color{gray!5}, % Code block background color
+    basicstyle=\ttfamily\small, % Font style: monospaced, small size
+    columns=fullflexible, % Allow line wrapping, no restrictions on column number
+    keepspaces=true, % Preserve spaces
+    language=[LaTeX]TeX, % Code language is LaTeX
+    breaklines=true, % Allow automatic line breaking
+    breakatwhitespace=true, % Break at whitespace only
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}, % Mark break position with red arrow
+    commentstyle=\color{gray}\itshape, % Comment style: gray italic
+    stringstyle=\color{orange}, % String style: orange
+    keywordstyle=\color{blue}, % Keyword style: blue
+    showstringspaces=false, % Do not show spaces within strings
+    numbers=left, % Display line numbers on the left
+    numberstyle=\scriptsize, % Line number font size: footnote size
+    numbersep=8pt, % Distance between line numbers and code: 8pt
+    frame=single, % Add single line border
+    frameround=tttt, % Rounded corners for the frame
+    rulecolor=\color{black}, % Frame color: black
+    extendedchars=true, % Allow the use of extended character sets
+    inputencoding=utf8, % Input encoding: UTF-8
+    literate={~} {$\sim$}{1}, % Handle tilde symbol display
+    escapeinside=``, % Use backticks as an escape region, to avoid garbled characters when using Chinese text
+    xleftmargin=2em, % Left margin of the code block
+    xrightmargin=2em, % Right margin of the code block
+    aboveskip=1em, % Space above the code block
+    framexleftmargin=2em, % Left margin of the frame
+}
+
+% Document
+\begin{document}
+    \title{\textbf{HW8}}
+    \author{白博臣，何骐多，夏营}
+    \date{}
+    \maketitle
+
+
+    \section{Problem1}\label{sec:1}
+    \subsection{二阶}\label{subsec:1.1}
+
+
+    令
+    \begin{equation*}
+        x_n=x_0+nh
+    \end{equation*}
+
+    二阶向前差分公式：
+    \begin{equation*}
+        f'' (x_0 ) = \frac{(f(x_0 ) - 2f(x_1 ) + f(x_2))}{h^2} +O(h)
+    \end{equation*}
+
+    二阶中心差分公式：
+    \begin{equation*}
+        f'' (x_0 ) = \frac{(f(x_(-1) ) - 2f(x_0 ) + f(x_1))}{h^2} +O(h^2)
+    \end{equation*}
+
+    二阶向后差分公式：
+    \begin{equation*}
+        f'' (x_0 ) = \frac{(f(x_(-2) ) - 2f(x_(-1) ) + f(x_0 ))}{h^2 }+O(h)
+    \end{equation*}
+
+    \subsection{三阶}\label{subsec:1.2}
+
+
+    三阶向前差分公式：
+    \begin{equation*}
+        f''' (x_0 ) = \frac{(-f(x_0 ) + 3f(x_1 ) - 3f(x_2 ) + f(x_3 ))}{h^3} +O(h)
+    \end{equation*}
+
+    三阶中心差分公式：
+    \begin{equation*}
+        f''' (x_0 ) = \frac{(-f(x_(-2) ) + 2f(x_(-1) ) - 2f(x_1 ) + f(x_2 ))}{2h^3} +O(h^2 )
+    \end{equation*}
+
+    三阶向后差分公式：
+    \begin{equation*}
+        f''' (x_0 ) = \frac{(-f(x_(-3) ) + 3f(x_(-2) ) -3 f(x_(-1) ) + f(x_0 ))}{h^3} +O(h)
+    \end{equation*}
+
+    \subsection{四阶}\label{subsec:1.3}
+
+
+    四阶向前差分公式：
+    \begin{equation*}
+        f^{iv} (x_0 ) = \frac{(f(x_0 ) - 4f(x_1 ) + 6f(x_2 ) - 4f(x_3 ) + f(x_4))}{h^4} +O(h)
+    \end{equation*}
+
+    四阶中心差分公式：
+    \begin{equation*}
+        f^{iv} (x_0 ) = \frac{(f(x_(-2) ) - 4f(x_(-1) ) + 6f(x_0) - 4f(x_1 ) + f(x_2 ))}{h^4} +O(h^2 )
+    \end{equation*}
+
+    四阶向后差分公式：
+    \begin{equation*}
+        f^{iv} (x_0 ) = \frac{(f(x_(-4)) - 4f(x_(-3) ) + 6f(x_(-2) ) - 4f(x_(-1) ) + f(x_0 ))}{h^4} +O(h)
+    \end{equation*}
+
+
+    \subsection{五阶}\label{subsec:1.4}
+
+    三阶向前差分公式：
+    \begin{equation*}
+        f^v (x_0 ) = \frac{(f(x_5 ) - 5f(x_4 ) + 10f(x_3 ) - 10f(x_2 ) + 5f(x_1 ) - f(x_0))}{h^5} +O(h)
+    \end{equation*}
+
+    三阶中心差分公式：
+    \begin{equation*}
+        f^v (x_0 ) = \frac{(-f(x_(-3) ) + 4f(x_(-2) ) - 5f(x_(-1) ) + 5f(x_1 ) - 4f(x_2 ) + f(x_3))}{2h^5}+O(h^2 )
+    \end{equation*}
+
+    三阶向后差分公式：
+    \begin{equation*}
+        f^v (x_0 ) = \frac{(f(x_(-5) ) - 5f(x_(-4) ) + 10f(x_(-3) ) - 10f(x_(-2) ) + 5f(x_(-1) ) - f(x_0))}{h^5} +O(h)
+    \end{equation*}
+
+    \newpage
+
+
+    \section{Problem2}\label{sec:2}
+    利用 \(o(h^2)\) 的中心差分公式计算一阶导数，使用 Java 代码实现如下
+    \begin{lstlisting}[language=Java, breaklines = true,label={lst:lstlisting2}]
+import static java.lang.StrictMath.*;
+
+interface function {
+    double cal(double x);
+}
+
+public class Derivative {
+    public static void main(String[] args) {
+        int n = 4;
+        double[] h = new double[n];
+        for (int i = 0; i < n; i++) {
+            h[i] = pow(10, -1 * (i + 1));
+        }
+        function f = (x) -> x * exp(x);
+        function d1f = (x) -> (x + 1) * exp(x);
+        double f01, f02, f11, f12, d1f1;
+        double d1f0 = d1f.cal(2);
+
+        for (double v:h) {
+            f01 = f.cal(2 + v);
+            f02 = f.cal(2 + 2 * v);
+            f11 = f.cal(2 - v);
+            f12 = f.cal(2 - 2 * v);
+            d1f1 = (-f02 + 8 * f01 - 8 * f11 + f12) / 12 / v;
+
+            double err = abs((d1f1 - d1f0) / d1f0);
+
+            System.out.printf("h = %f\n",v);
+            System.out.printf("f'0(2.0)   = %.16f, f'(2.0)   = %.16f, relative error = %.16f\n",d1f0, d1f1, err);
+        }
+    }
+}
+    \end{lstlisting}
+
+    运行结果如下
+    \begin{figure}[h]
+        \centering
+        \includegraphics[height=0.15 \textheight]{Derivative1}
+        \caption{Derivative 运行结果}\label{fig:figure2}
+    \end{figure}
+
+    据计算，在 \(h = 0.001\) 时，相对误差较小，是该范围内的最佳。
+
+    当 \(h\) 缩小时，相对误差会先缩小在增大，当 \(h < 10^{-4}\) 时，相对误差会随 \(h\) 缩小而增大。
+
+    \newpage
+
+
+    \section{Problem3}\label{sec:3}
+    利用 \(o(h^2)\) 的中心差分公式计算二阶导数，使用 Java 代码实现如下
+    \begin{lstlisting}[language=Java, breaklines = true,label={lst:lstlisting3}]
+import static java.lang.StrictMath.*;
+
+interface function {
+    double cal(double x);
+}
+
+public class Derivative {
+    public static void main(String[] args) {
+        int n = 4;
+        double[] h = new double[n];
+        for (int i = 0; i < n; i++) {
+            h[i] = pow(10, -1 * (i + 1));
+        }
+        function f = (x) -> x * exp(x * x);
+        function d2f = (x) -> (4 * x * x * x + 6 * x) * exp(x * x);
+        double f00, f01, f02, f11, f12, d2f1;
+        double d2f0 = d2f.cal(2);
+
+        for (double v : h) {
+            f00 = f.cal(2);
+            f01 = f.cal(2 + v);
+            f02 = f.cal(2 + 2 * v);
+            f11 = f.cal(2 - v);
+            f12 = f.cal(2 - 2 * v);
+            d2f1 = (-f02 + 16 * f01 - 30 * f00 + 16 * f11 - f12) / 12 / v / v;
+
+            double err = abs((d2f1 - d2f0) / d2f0);
+
+            System.out.printf("h = %f\n",v);
+            System.out.printf("f'0(2.0)   = %.16f, f'(2.0)   = %.16f, relative error = %.16f\n",d2f0, d2f1, err);
+        }
+    }
+}
+    \end{lstlisting}
+
+    运行结果如下
+    \begin{figure}[h]
+        \centering
+        \includegraphics[height=0.15 \textheight]{Derivative2}
+        \caption{Derivative 运行结果}\label{fig:figure3}
+    \end{figure}
+
+    据计算，在 \(h = 0.001\) 时，相对误差较小，是该范围内的最佳。
+
+    当 \(h\) 缩小时，相对误差会先缩小在增大，当 \(h < 10^{-4}\) 时，相对误差会随 \(h\) 缩小而增大。
+
+    \newpage
+
+
+    \section{Problem4}\label{sec:4}
+
+    \subsection{a}\label{subsec:4.1}
+    使用 Python 代码实现如下
+    \begin{lstlisting}[language=Python, breaklines = true,label={lst:lstlisting4.1}]
+# `设置函数f(x)=x(x-1)`
+def f(x):
+    return x * (x - 1)
+
+
+# `设置求解导数的公式`
+def derivative_f(x, delta):
+    return (f(x + delta) - f(x)) / delta
+
+
+# `设置导数函数 f'(x)=2x-1`
+def real_df(x):
+    return 2 * x - 1
+
+
+# `计算并且输出结果`
+approximation_df = derivative_f(1, 1e-2)
+exact_df = real_df(1)
+
+print('`近似值：`', '\n', approximation_df)
+print('`准确值：`', '\n', exact_df)
+    \end{lstlisting}
+
+    运行结果如下
+    \begin{figure}[h]
+        \centering
+        \includegraphics[height=0.12 \textheight]{Prob4a}
+        \caption{HW8\_4\_a 运行结果}\label{fig:figure4.1}
+    \end{figure}
+
+    结论：
+
+    近似值与准确值并不完全相同, 这是因为此时的 \(\delta\) 的取值 \(\delta = 10^{-2}\) 并没有达到 \(\lim{\delta \rightarrow 0}\) ，所以此时是用的函数上 \(x = 0.5\) 与 \(x = 0.5 + \delta\) 两点的割线斜率来代替的导数值，与实际结果会存在误差。
+
+    \subsection{b}\label{subsec:4.2}
+    加入一个 for 循环语句来实现对多个 \(\delta\) 值的运算，使用 Python 代码实现如下
+    \begin{lstlisting}[language=Python, breaklines = true,label={lst:lstlisting4.2}]
+import numpy as np
+
+
+# `设置函数f(x)=x(x-1)`
+def f(x):
+    return x * (x - 1)
+
+
+# `设置求解导数的公式`
+def derivative_f(x, delta):
+    return (f(x + delta) - f(x)) / delta
+
+
+# `设置导数函数 f'(x)=2x-1`
+def real_df(x):
+    return 2 * x - 1
+
+
+# `设置不同的delta值来计算导数并输出结果`
+log_delta = np.linspace(-2, -18, 9)
+delta = 10 ** log_delta
+exact_df = real_df(1)
+print('`准确值为`', '\n', exact_df)
+for i in range(len(delta)):
+    approximation_df = derivative_f(1, delta[i])
+    print('`当`delta={}`时`'.format(delta[i]), '\n', approximation_df)
+    \end{lstlisting}
+
+    运行结果如下
+    \begin{figure}[h]
+        \centering
+        \includegraphics[height=0.64 \textheight]{Prob4b}
+        \caption{HW8\_4\_b 运行结果}\label{fig:figure4.2}
+    \end{figure}
+
+    \newpage
+    结论：
+
+    当 \(\delta\) 值在 \(10^{-2}, 10^{-8} \) 中时，随着 \(\delta\) 的减小，近似值逐渐逼近真实值，而在 \(\delta > 10^{-8}\) 后，随着 \(\delta\) 的减小，近似值与真实值的误差逐渐增大，当 \(\delta > 10^{-16}\) 时，近似值为 \(0\) 。
+
+    现对上述异常现象做出解释。
+
+    利用计算机并通过公式 \(\frac{df(x)}{dx} = \lim_{\delta \rightarrow 0}{\frac{f(x + \delta)-f(x)}{\delta}}\) 估计近似值时，其同时会产生两种误差，一类是截断误差（truncation error），其与 \(\delta\) 的值成正相关；另一类是由于算法问题以及机器精度导致的舍入误差（round-off error），其与机器精度成正相关，与 \(\delta\) 成负相关。这两类误差的和组成了这一计算公式导致的总误差，并且由于两类误差与 \(\delta\) 的相关性不同，这就导致当 \(\delta\) 减小时，截断误差在减小，而舍入误差在增大。结合 lecture 8 可以写出两类误差具体的表达式。
+
+    截断误差：
+    \begin{equation*}
+        e\_tru = \delta / 2 \abs{f''(x)}
+    \end{equation*}
+
+    舍入误差：
+    \begin{equation*}
+        e\_rou = (2c \abs{f(x)}) / \delta
+    \end{equation*}
+    其中 \(c\) 为机器精度
+
+    于是总误差为：
+    \begin{equation*}
+        e = e\_tru + e\_rou = \delta / 2 \abs{f''(x)} + (2c \abs{f(x)}) / \delta
+    \end{equation*}
+
+    当 \(\delta\) 值在 \(10^{-2},10^{-8}\) 中时，截断误差的影响占主导地位，所以此时总误差会随着 \(\delta\) 的减小而减小，而当 \(\delta > 10^{-8}\) 时，截断误差趋近于 \(0\) ，舍入误差的影响占主导地位了，所以此时总误差会随着 \(\delta\) 的减小而增大。而当 \(\delta > 10^{-16}\) 时，此时， \(\delta\) 接近于甚至小于机器精度 \(c\) 值，于是 \(f(x + \delta) - f(x)\) 在计算机的运算过程被直接舍入为 \(0\) 了，所以此时近似值为 \(0\) 。
+
+    \subsection{c}\label{subsec:4.3}
+    首先生成一个在区间 \([0, 20]\) 有 \(200\) 项的等差数列 \(log_{10}{h}\) ，而后复用上一问代码，计算出不同 \(h\) 值下的近似值，而后与真实值做差得到误差。再对误差做一次 \(log_{10}\) 的运算，再利用题意所给的
+    \begin{equation*}
+        g(h) = \frac{h}{2} \sin{0.5} + \epsilon'' \frac{2}{h} \sin{0.5}
+    \end{equation*}
+    画出所需的 \(log10-log10\) 图像。
+
+    使用 Python 代码实现如下
+    \begin{lstlisting}[language=Python, breaklines = true,label={lst:lstlisting4.3}]
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+# `设置函数f(x)=sin(x)`
+def f(x):
+    return np.sin(x)
+
+
+# `设置求解导数的公式`
+def derivative_f(x, delta):
+    return (f(x + delta) - f(x)) / delta
+
+
+# `设置导数函数 f'(x)=cos(x)`
+def real_df(x):
+    return np.cos(x)
+
+
+# `设置g(h)=h*sin(0.5)/2+2c*sin(0.5)/h`
+def g(h, x):
+    return h * f(x) / 2 + c * 2 * f(x) / h
+
+
+# `设置h`
+log_h = np.linspace(0, -20, 200)
+h = 10 ** log_h
+
+# `机器精度`
+c = 6 * 10 ** -16
+
+# `计算误差值`
+error = np.array([])
+for i in range(len(h)):
+    temp = abs(derivative_f(0.5, h[i]) - real_df(0.5))
+    error = np.append(error, np.log10(temp))
+
+# `绘制图像`
+plt.figure()
+plt.plot(log_h, np.log10(g(h, 0.5)))
+plt.scatter(log_h, error, s=5, color='red')
+plt.show()
+
+# `计算最佳的h，等价于g'(h)=0时的h的值`
+h0=np.sqrt(4*c)
+print(h0)
+    \end{lstlisting}
+
+    运行结果如下
+
+    与示意图相同：
+    \begin{figure}[h]
+        \centering
+        \includegraphics[height=0.6 \textheight]{Prob4c1}
+        \caption{HW8\_4\_c 运行结果}\label{fig:figure4.3.1}
+    \end{figure}
+
+    \newpage
+    重新绘图（Reproduce）（\(\varepsilon'' = 6 \times 10^{-16}\)）
+    \begin{figure}[h]
+        \centering
+        \includegraphics[height=0.6 \textheight]{Prob4c2}
+        \caption{HW8\_4\_c 运行结果}\label{fig:figure4.3.2}
+    \end{figure}
+    \newpage
+    最佳 \(h\) 值为：
+    \begin{equation*}
+        h = 4.898979485566356 \times 10^{-8}
+    \end{equation*}
+
+    \newpage
+    \subsection{d}\label{subsec:4.4}
+    如（b）问结论部分的叙述，可以给出两种误差的表达式：
+
+    截断误差：
+    \begin{equation*}
+        e\_tru = h / 2 \abs{f''(x)}
+    \end{equation*}
+
+    舍入误差：
+    \begin{equation*}
+        e\_rou = (2c \abs{f(x)}) / h
+    \end{equation*}
+    其中 \(c\) 为机器精度
+
+    进而写出总误差：
+    \begin{equation*}
+        e = e\_tru + e\_rou = h / 2 \abs{f''(x)} + (2c \abs{f(x)}) / h
+    \end{equation*}
+
+    可以发现总误差 \(e\) 存在一个最小值，而使 \(e\) 取到这一最小值的 \(h\) 值即为最佳 \(h\) 值，也即 \(h_{best}\) 。
+
+    由均值不等式有：
+    \begin{equation*}
+        \frac{h}{2} \abs{f''(x)} + \frac{2c \abs{f(x)}}{h} \geq 2 \sqrt {\frac{c \abs{f(x)}}{\abs{f''(x)}}}
+    \end{equation*}
+
+    取等条件为：
+    \begin{equation*}
+        \frac{h}{2} \abs{f''(x)} = \frac{2c \abs{f(x)}}{h}
+    \end{equation*}
+
+    进而求得 \(h_{best}\)：
+    \begin{equation*}
+        h_{best} = \sqrt {\frac{4c \abs{f(x)}}{|f''(x)|}}
+    \end{equation*}
+
+    使用 Python 代码实现如下
+    \begin{lstlisting}[language=Python, breaklines = true,label={lst:lstlisting4.4}]
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+# `设置函数f(x)=sin(x)`
+def f(x):
+    return np.sin(x)
+
+
+# `设置求解导数的公式`
+def derivative_f(x, delta):
+    return (f(x + delta) - f(x)) / delta
+
+
+# `设置导数函数 f'(x)=cos(x)`
+def real_df(x):
+    return np.cos(x)
+
+
+# `设置h`
+log_h = np.linspace(0, -20, 200)
+h = 10 ** log_h
+
+# `机器精度`
+c = 6 * 10 ** -16
+
+
+# `计算截断误差`
+def e_tru(h, x):
+    return h * f(x) / 2
+
+
+# `计算舍入误差`
+def e_rou(h, x):
+    return c * 2 * f(x) / h
+
+
+# `计算总误差`
+def g(h, x):
+    return e_rou(h, x) + e_tru(h, x)
+
+
+# `计算h的最佳取值`
+def h_best(x):
+    return np.sqrt(4 * c)
+
+
+# `计算各种误差`
+e_truncation = e_tru(h, 0.5)
+e_roundoff = e_rou(h, 0.5)
+e = g(h, 0.5)
+
+# `绘制图像与输出结果`
+plt.figure()
+plt.plot(log_h, np.log10(e_truncation), label='truncation error')
+plt.plot(log_h, np.log10(e_roundoff), label='round-off error')
+plt.plot(log_h, np.log10(e), label='total error')
+plt.xlabel('log10(h)')
+plt.legend()
+plt.show()
+
+# `计算并输出h\_best`
+print('`h的最佳取值为：`', '\n', h_best(0.5))
+    \end{lstlisting}
+
+    以（c）给出的机器精度：
+    \begin{equation*}
+        c = 6 \times 10^{-16}
+    \end{equation*}
+    为例。
+    \begin{figure}[h]
+        \centering
+        \includegraphics[height=0.6 \textheight]{Prob4d}
+        \caption{HW8\_4\_d 运行结果}\label{fig:figure4.4}
+    \end{figure}
+
+    \newpage
+    \(h\) 的最佳取值为：
+    \begin{equation*}
+        4.898979485566356e-08
+    \end{equation*}
+
+\end{document}
