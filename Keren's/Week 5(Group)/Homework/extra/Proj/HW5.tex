@@ -1,0 +1,571 @@
+\documentclass[UTF8]{ctexart}
+\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
+\usepackage{mathtools}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{subcaption}
+\lstset{ % 设置代码块样式和参数
+    backgroundcolor=\color{gray!5}, % 代码块背景颜色
+    basicstyle=\ttfamily\small, % 字体样式为等宽字体，小号
+    columns=fullflexible, % 允许自由换行，不限制列数
+    keepspaces=true, % 保留空格
+    language=[LaTeX]TeX, % 代码语言为LaTeX
+    breaklines=true, % 允许自动换行
+    breakatwhitespace=true, % 仅在空白字符处断行
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}, % 换行位置标记为红色箭头
+    commentstyle=\color{gray}\itshape, % 注释样式为灰色斜体
+    stringstyle=\color{orange}, % 字符串样式为橙色
+    keywordstyle=\color{blue}, % 关键词样式为蓝色
+    showstringspaces=false, % 不显示字符串中的空格
+    numbers=left, % 在左侧显示行号
+    numberstyle=\scriptsize, % 行号字体大小为脚注大小
+    numbersep=8pt, % 行号与代码之间的距离为8pt
+    frame=single, % 添加单线边框
+    frameround=tttt, % 边框为圆角
+    rulecolor=\color{black}, % 边框颜色为黑色
+    extendedchars=true, % 允许使用扩展字符集
+    inputencoding=utf8, % 输入编码为UTF-8
+    literate={~} {$\sim$}{1}, % 处理波浪线符号的显示
+    escapeinside=``, % 使用反引号作为逃逸区域，中文放置其中避免乱码
+    xleftmargin=2em, % 代码块左侧边距
+    xrightmargin=2em, % 代码块右侧边距
+    aboveskip=1em, % 代码块上方间距
+    framexleftmargin=2em, % 代码块边框左侧边距
+}
+\begin{document}
+    \title{\textbf{HW5}}
+    \author{白博臣，何骐多，夏营}
+    \date{}
+    \maketitle
+
+    \section{section1}\label{sec:section1}
+    牛顿迭代法是一种经典的求解函数根的方法，它是一种迭代方法。其思想为沿着当地的切线方向不断移动计算点，使其不断逼近真实根值。假设初始值为 \(x_k\) ，函数为 \(f(x)\) ，则
+
+    \begin{equation*}
+        x_{k+1}=x_k-\frac{f(x_k)}{f'(x_k)}\label{eq:equation1.1}
+    \end{equation*}
+
+    其下一步预测的根就是 \(x_{k+1}\)。然后逐次迭代，x值会越来越接近真实的根植。
+
+    本题目中 \(f = z^3-1\)，其牛顿迭代求根的迭代方程为
+
+    \begin{equation*}
+        x_{k+1}=x_k-\frac{x_k^3-1}{3x_k^2}\label{eq:equation1.2}
+    \end{equation*}
+
+    该方程有三个根，其实部与虚部都在 \([-2,2]\) 区间内：
+
+    我们使用 Matlab 进行相关运算处理：
+
+    使用 parfor 循环来实现并行计算。parfor 循环是 MATLAB 中用于并行计算的一种机制，它会自动将循环迭代分配到多个处理器上并行执行，从而加速计算过程。
+
+    在循环内部，每次迭代都是独立的，不涉及对前一次迭代结果的依赖，这样可以确保并行计算的正确性。
+
+    GPU 加速运算：
+
+    首先，需要将数据移动到 GPU 上进行计算。在代码中，使用 gpuArray 函数将复数网格 X 的一行数据（X(i, :)）移动到 GPU 上，以便后续在 GPU 上进行计算。
+
+    然后，利用 GPU 提供的并行计算能力，通过调用 arrayfun 函数对每个网格点进行计算。arrayfun 函数可以将一个函数应用到数组中的每个元素，并在 GPU 上并行执行这些函数调用，从而加速计算过程。
+
+    在这里，solve 函数被应用到 GPU 上的每个网格点上，以计算方程的解。
+
+    计算完成后，使用 gather 函数将计算结果从 GPU 移回 CPU，以便后续处理和可视化。
+
+    通过以上步骤，实现了在 GPU 上并行计算复平面上方程的根，大大加速了计算过程。
+
+    使用 Matlab 代码实现如下
+    \begin{lstlisting}[language=Matlab, breaklines = true,label={lst:lstlisting1}]
+clc; clear; close all;
+N = 20000;
+epsilon = 1e-3;
+root1 = 1;
+root2 = -1 / 2 + sqrt(3)/2i;
+root3 = -1 / 2 - sqrt(3)/2i;
+x = linspace(-2, 2, N);
+y = linspace(-2, 2, N);
+[xgrid, ygrid] = meshgrid(x, y);
+X = xgrid + 1i*ygrid;
+
+% `使用parfor循环并在循环内部利用GPU加速的函数`
+A = zeros(N);
+tic; % `开始计时`
+parfor i = 1:N
+    % `将数据移动到GPU`
+    X_gpu = gpuArray(X(i, :));
+
+    % `在每次迭代中，利用GPU加速计算结果`
+    A_gpu = arrayfun(@solve, X_gpu);
+
+    % `将计算结果从GPU移回CPU`
+    A(i, :) = gather(A_gpu);
+
+end
+
+% `对计算结果进行处理`
+A(abs(A - root1) < epsilon) = 0;
+A(abs(A - root2) < epsilon) = 1;
+A(abs(A - root3) < epsilon) = 2;
+
+
+% `绘制图像`
+% fig = figure('color',[1 1 1],'position',[400,100,500*1.5,416*1.5], 'Visible','off');
+% contourf(x, y, A, 'LineStyle', 'none');
+% clim([0, 2])
+% colormap("cool")
+% colorbar;
+% saveas(fig, 'plot.png');
+
+toc;
+
+% writematrix(A, "result.txt")
+    \end{lstlisting}
+    运行结果如下
+    \begin{figure}[htbp]
+        \centering
+        \begin{subfigure}[b]{0.42\textwidth}
+            \includegraphics[height=0.24 \textheight]{spring}
+            \caption{spring theme}\label{fig:figure1.1}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.42\textwidth}
+            \includegraphics[height=0.24 \textheight]{summer}
+            \caption{summer theme}\label{fig:figure1.2}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.42\textwidth}
+            \includegraphics[height=0.24 \textheight]{autumn}
+            \caption{autumn theme}\label{fig:figure1.3}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.42\textwidth}
+            \includegraphics[height=0.24 \textheight]{winter}
+            \caption{winter theme}\label{fig:figure1.4}
+        \end{subfigure}
+        \caption{NB 运行结果}\label{fig:figure1}
+    \end{figure}
+
+    \newpage
+    \section{Problem2}\label{sec:problem2}
+    利用 Desmos 作图
+    \begin{figure}[h]
+        \centering
+        \includegraphics[height=0.32 \textheight]{desmos-graph-prob2}
+        \caption{函数图像绘制}\label{fig:figure2.1}
+    \end{figure}
+    利用 NR-Bisection 求解方程 \(4cos(x) - e^x = 0\) ，使用 Java 代码实现如下
+    \begin{lstlisting}[language=Java, breaklines = true,label={lst:lstlisting2}]
+/**
+ * This class demonstrates the numerical methods of finding roots using a combination of NR and Bisection methods.
+ */
+
+import java.util.Scanner;
+
+import static java.lang.StrictMath.*;
+
+public class NRBisection {
+    static double epsilon = 1e-10;
+
+    public static void main(String[] args) {
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the lower bound");
+        double xl = scanner.nextDouble();
+        System.out.println("Enter the upper bound");
+        double xu = scanner.nextDouble();
+        int num = 100;
+        int n = (int) ((xu - xl) * num);
+
+        System.out.printf("In %.3f to %.3f, there are roots\n", xl, xu);
+        for (int i = 0; i <= n; i++) {
+            double x1 = xl + (double) i / num;
+            double x2 = xl + (double) (i + 1) / num;
+            if (function(x1) * function(x2) < 0) {
+                findRoot(x1, x2);
+            }
+        }
+    }
+
+    /**
+     * Finds the root of the function within the given range.
+     *
+     * @param x1 The lower bound of the range
+     * @param x2 The upper bound of the range
+     */
+    private static void findRoot(double x1, double x2) {
+        double x0;
+        if (abs(function(x1)) < abs(function(x2))) {
+            x0 = x1;
+        } else {
+            x0 = x2;
+        }
+        double root = solve(x1, x2, x0);
+        System.out.printf("%.3f\t", root);
+    }
+
+    /**
+     * Defines the function for which the root is to be found.
+     *
+     * @param x The input value
+     * @return The value of the function at x
+     */
+    private static double function(double x) {
+        return 4 * cos(x) - exp(x);
+    }
+
+    /**
+     * Computes the derivative of the function at a given point.
+     *
+     * @param x The point at which the derivative is to be computed
+     * @return The value of the derivative at x
+     */
+    private static double derivative(double x) {
+        return -4 * sin(x) - exp(x);
+    }
+
+    /**
+     * Implements the NR method to find a new approximation for the root.
+     *
+     * @param x The current approximation for the root
+     * @return The new approximation using the NR method
+     */
+    private static double xNR(double x) {
+        return x - function(x) / derivative(x);
+    }
+
+    /**
+     * Recursively applies the combined NR and Bisection methods to find the root.
+     *
+     * @param x1 The lower bound of the range
+     * @param x2 The upper bound of the range
+     * @param x  The current approximation for the root
+     * @return The calculated root
+     */
+    private static double solve(double x1, double x2, double x) {
+        if (abs(function(x)) < epsilon) {
+            return x;
+        } else {
+            double xN = xNR(x);
+
+            if (x1 < xN && x2 > xN) {
+                return solve(x1, x2, xN);
+            } else {
+                xN = (x1 + x2) / 2;
+                if (function(x1) * function(xN) <= 0) {
+                    // Update parameter
+                    if (abs(function(x1)) < abs(function(xN))) {
+                        return solve(x1, xN, x1);
+                    } else {
+                        return solve(x1, xN, xN);
+                    }
+                } else {
+                    if (abs(function(x2)) < abs(function(xN))) {
+                        return solve(x2, xN, x2);
+                    } else {
+                        return solve(x2, xN, xN);
+                    }
+                }
+            }
+        }
+    }
+}
+    \end{lstlisting}
+    运行结果如下
+    \begin{figure}[h]
+        \centering
+        \includegraphics[height=0.12 \textheight]{NRBisection}
+        \caption{NRBisection 运行结果}\label{fig:figure2.2}
+    \end{figure}
+
+    \newpage
+
+
+    \section{Problem3}\label{sec:problem3}
+    利用 Desmos 绘制函数图像，观察 \(h\) 的变化对根的影响.
+    \begin{figure}[h]
+        \centering
+        \includegraphics[height=0.29 \textheight]{desmos-graph-prob3.1.1}
+        \caption{\(y = f(x)\) 的图像}\label{fig:figure3.1}
+    \end{figure}
+    \begin{figure}[h]
+        \centering
+        \includegraphics[height=0.29 \textheight]{desmos-graph-prob3.1.2}
+        \caption{\(y = x \tan{x}\) 和 \(y = sqrt{h^2 - x^2}\) 的图像}\label{fig:figure3.2}
+    \end{figure}
+
+    观察可得，对 \(f(x)\) 而言在 \(n \pi < \abs{h} < (n+1) \pi (n = 0, 1, ...)\) 时，有 \2(n+1)\) 个根。根的范围
+    \begin{equation}
+        \begin{aligned}
+            k \pi <  & x_k < \left(k + \frac{1}{x}\right) \pi \\
+            -\left(k + \frac{1}{x}\right) \pi < & x_k < -k \pi \quad (k = 1, 2, ... , n)
+        \end{aligned}
+        \label{eq:equation3.1}
+    \end{equation}
+    \begin{figure}[h]
+        \centering
+        \includegraphics[height=0.29 \textheight]{desmos-graph-prob3.2.1}
+        \caption{\(y = g(x)\) 的图像}\label{fig:figure3.3}
+    \end{figure}
+    \begin{figure}[h]
+        \centering
+        \includegraphics[height=0.29 \textheight]{desmos-graph-prob3.2.2}
+        \caption{\(y = x \cot{x}\) 和 \(y = -sqrt{h^2 - x^2}\) 的图像}\label{fig:figure3.4}
+    \end{figure}
+    而对于 \(g(x)\)，在 \(\left( n + \frac{1}{x} \right) \pi < \abs{h} < \left(n+\frac{3}{2}\right) \pi (n = 0, 1, ...)\) 时，有 \2(n+1\) 个根。根的范围
+    \begin{equation}
+        \begin{aligned}
+            \left( k + \frac{1}{x} \right) \pi < & x_k < (k + 1) \pi \\
+            -(k + 1) \pi < & x_k < -\left( k + \frac{1}{x} \right) \pi \quad (k = 1, 2, ..., n)
+        \end{aligned}\label{eq:equation3.2}
+    \end{equation}
+    利用 full Muller-Brent 求解根，使用 Java 代码实现如下
+    \begin{lstlisting}[language=Java, breaklines = true,label={lst:lstlisting3}]
+import java.util.Scanner;
+import java.util.function.Function;
+
+import static java.lang.StrictMath.*;
+
+/**
+ * This class implements the Muller's Bisection method to find roots of transcendental equations.
+ */
+public class FullMB {
+
+    static int N = 100;
+    static double epsilon = 1e-10;
+
+    public static void main(String[] args) {
+
+        System.out.println("Enter the h");
+        Scanner scanner = new Scanner(System.in);
+        double h = scanner.nextDouble();
+
+        Function<Double, Double> f = (x) -> x * tan(x) - sqrt(h * h - x * x);
+        Function<Double, Double> g = (x) -> x / tan(x) + sqrt(h * h - x * x);
+
+        System.out.println("Root of x tan(x) - sqrt(h^2 - x^2) = 0");
+        int n = (int) (abs(h / PI));
+        for (int i = n; i >= 0; i--) {
+            double xl = -(i + 1.0 / 2) * PI;
+            double xu = -i * PI;
+            rank(xl, xu, f);
+        }
+        for (int i = 0; i <= n; i++) {
+            double xl = i * PI;
+            double xu = (i + 1.0 / 2) * PI;
+            rank(xl, xu, f);
+        }
+        System.out.println();
+        System.out.println("Root of x cot(x) + sqrt(h^2 - x^2) = 0");
+        n = (int) (abs(h / PI) - 1.0 / 2);
+        for (int i = n; i >= 0; i--) {
+            double xl = -(i + 1) * PI;
+            double xu = -(i + 1.0 / 2) * PI;
+            rank(xl, xu, g);
+        }
+        for (int i = 0; i <= n; i++) {
+            double xl = (i + 1.0 / 2) * PI;
+            double xu = (i + 1) * PI;
+            rank(xl, xu, g);
+        }
+    }
+
+    /**
+     * Find roots within a given range using the Muller's Bisection method.
+     *
+     * @param xl Lower bound of the range
+     * @param xu Upper bound of the range
+     * @param f  The function for which roots are to be found
+     */
+    public static void rank(double xl, double xu, Function<Double, Double> f) {
+        double step = 0.001;
+        double n = (xu - xl) / step;
+        for (int i = 0; i < n - 3; i++) {
+            double x = xl + i * step;
+            if (f.apply(x) * f.apply(x + step) < 0) {
+                double root = fullMB(x, x + step, x + 2 * step, f);
+                System.out.printf("%.3f\t", root);
+            }
+        }
+    }
+
+    /**
+     * Muller's Bisection method to find a root of a function within a given interval.
+     *
+     * @param x0       Initial point 1
+     * @param x1       Initial point 2
+     * @param x2       Initial point 3
+     * @param function The function for which the root is to be found
+     * @return The estimated root
+     */
+    public static double fullMB(double x0, double x1, double x2, Function<Double, Double> function) {
+        double x = 0;
+
+        for (int i = 0; i < N; i++) {
+            double f0 = function.apply(x0);
+            double f1 = function.apply(x1);
+            double f2 = function.apply(x2);
+
+            double h1 = x1 - x0;
+            double h2 = x2 - x1;
+            double delta1 = (f1 - f0) / h1;
+            double delta2 = (f2 - f1) / h2;
+            double d = (delta2 - delta1) / (h1 + h2);
+
+            double b = delta2 + h2 * d;
+            double D = Math.sqrt(b * b - 4 * f2 * d);
+
+            double denominator = b + ((b >= 0) ? 1 : -1) * D;
+
+            double dx = -2 * f2 / denominator;
+            x = x2 + dx;
+
+            if (Math.abs(dx) < epsilon) {
+                break;
+            }
+
+            x0 = x1;
+            x1 = x2;
+            x2 = x;
+        }
+
+        return x;
+    }
+}
+    \end{lstlisting}
+    运行结果如下
+    \begin{figure}[h]
+        \centering
+        \includegraphics[height=0.05 \textheight]{CubicEquationSolver}
+        \caption{CubicEquationSolver 运行结果}\label{fig:figure3.5}
+    \end{figure}
+
+    \nextpage
+
+
+    \section{Problem4}\label{sec:problem4}
+    利用范盛金公式求解根，使用 Java 代码实现如下
+    \begin{lstlisting}[language=Java, breaklines = true,label={lst:lstlisting4}]
+import static java.lang.StrictMath.*;
+
+/**
+ * This class solves a cubic equation of the form ax^3 + bx^2 + cx + d = 0 using Cardano's method.
+ */
+public class CubicEquationSolver {
+
+    /**
+     * Main method to solve a specific cubic equation and print the roots.
+     * @param args Command line arguments (not used)
+     */
+    public static void main(String[] args) {
+        double a = 1.0;
+        double b = -70.5;
+        double c = 1533.54;
+        double d = -10082.44;
+        System.out.println("Root of "+a+"x^3 + "+b+"x^2 + "+c+"x + "+d+" = 0");
+        for (double[] root : solve(a, b, c, d)) {
+            System.out.printf("%f+%fi\t", root[0], root[1]);
+        }
+    }
+
+    /**
+     * Solves the cubic equation given the coefficients a, b, c, and d.
+     * @param a Coefficient of x^3
+     * @param b Coefficient of x^2
+     * @param c Coefficient of x
+     * @param d Constant term
+     * @return Array of arrays containing the real and imaginary parts of the roots
+     */
+    private static double[][] solve(double a, double b, double c, double d) {
+        double A = b * b - 3 * a * c;
+        double B = b * c - 9 * a * d;
+        double C = c * c - 3 * b * d;
+        double delta = B * B - 4 * A * C;
+        if (A == 0 && B == 0) {
+            return new double[][]{{-b / 3 / a, 0}, {-c / b, 0}, {-3 * d / c, 0}};
+        } else {
+            if (delta > 0) {
+                double Y1 = A * b + 3 * a * ((-b + sqrt(B * B - 4 * a * c)) / 2);
+                double Y2 = A * b + 3 * a * ((-b + sqrt(B * B + 4 * a * c)) / 2);
+                double t1 = pow(Y1, 1.0 / 3) + pow(Y2, 1.0 / 3);
+                double t2 = pow(Y1, 1.0 / 3) - pow(Y2, 1.0 / 3);
+                return new double[][]{{(-b - t1) / 3 / a, 0}, {(-b + t1 / 2) / 3 / a, (-b + t2 * sqrt(3) / 2) / 3 / a}, {(-b + t1 / 2) / 3 / a, -(-b + t2 * sqrt(3) / 2) / 3 / a}};
+            } else if (delta == 0) {
+                double K = B / A;
+                return new double[][]{{-b / a + K, 0}, {-K / 2, 0}, {-K / 2, 0}};
+            } else {
+                double T = (2 * A * b - 3 * a * B) / 2 / sqrt(A * A * A);
+                double theta = acos(T);
+                double t1 = cos(theta / 3);
+                double t2 = sqrt(3) * sin(theta / 3);
+                return new double[][]{{(-b - 2 * sqrt(A) * t1) / 3 / a, 0}, {(-b + sqrt(A) * (t1 + t2)) / 3 / a, 0}, {(-b + sqrt(A) * (t1 - t2)) / 3 / a, 0}};
+            }
+        }
+    }
+}
+    \end{lstlisting}
+    运行结果如下
+    \begin{figure}[h]
+        \centering
+        \includegraphics[height=0.16 \textheight]{FullMB}
+        \caption{FullMB 运行结果}\label{fig:figure4}
+    \end{figure}
+
+    \nextpage
+    \section{Problem5}\label{sec:problem5}
+    对于这一题，应首先注意到所求的拉格朗日点是位于两个天体之间的拉格朗日点，同时，因为此时地球的质量远大于月球，所以为了使卫星满足相对平衡运动的条件，其所处的位置会更为靠近月球。由此可以给出拉格朗日点大致的范围应该在 \([1.9 \times 10^8, 3.8 \times 10^8]\)，故而可取起点 \(r_0 = 1.9 \times 10^8\)（对于牛顿法则只取这一个点即可）和终点 \(r_1 = 3.8 \times 10^8\) 以此便可以确定 Newton’s Method 和 Secant Method 的起点与终点。这两种算法均以 while 循环实现。
+
+    具体代码如下：
+    \begin{lstlisting}[language=Python, breaklines = true,label={lst:lstlisting5}]
+# `定义需求解的函数`
+def func(x):
+    G = 6.674e-11
+    M = 5.974e24
+    m = 7.348e22
+    R = 3.844e8
+    w = 2.662e-6
+    y = G * M / (x * x) - G * m / ((R - x) * (R - x)) - w * w * x
+    return y
+
+
+def dfunc(x):
+    G = 6.674e-11
+    M = 5.974e24
+    m = 7.348e22
+    R = 3.844e8
+    w = 2.662e-6
+    y = -2 * G * M / (x * x * x) - 2 * G * m / ((R - x) * (R - x) * (R - x)) - w * w
+    return y
+
+
+# `实现牛顿迭代法求解`
+def func1(x, z):
+    while abs(func(x)) > z:
+        x = x - func(x) / dfunc(x)
+    return x
+
+
+# `实现截断法求解`
+def func2(x, y, z):
+    while abs(x - y) > z:
+        temp = y - func(y) * (y - x) / (func(y) - func(x))
+        x = y
+        y = temp
+    return y
+
+
+# `代入预设初始范围`
+x1 = 1.9e8
+y1 = 3.8e8
+root1 = func1(x1, 0.000001)
+root3 = func2(x1, y1, 0.000001)
+print('Newton Method`求得根为：`', '\n%.6e' % root1)
+print('Secant Method`求得根为：`', '\n%.6e' % root3)
+    \end{lstlisting}
+    运行结果如下
+    \begin{figure}[h]
+        \centering
+        \includegraphics[height=0.12 \textheight]{lagrange_point}
+        \caption{lagrange\_point 运行结果}\label{fig:figure5}
+    \end{figure}
+\end{document}
